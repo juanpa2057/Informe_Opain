@@ -145,10 +145,10 @@ valores_a_buscar = [
 ]
 
 mapeo = {
-    "ea-consumo-total-hora": 'Consumo energía total Medido',
-    "ea-control-sistema-hvac-hora": "Consumo energía Sistema HVCA",
-    "ea-oficinas-tablero-normal-hora": "Consumo energía Tablero normal",
-    "ea-oficinas-tablero-regulado-hora": "Consumo energía Tablero Regulado"
+    "ea-consumo-total-hora": 'Consumo Energía Total Medido',
+    "ea-control-sistema-hvac-hora": "Consumo Energía Sistema HVCA",
+    "ea-oficinas-tablero-normal-hora": "Consumo Energía Tablero Normal",
+    "ea-oficinas-tablero-regulado-hora": "Consumo Energía Tablero Regulado"
 
 }
 
@@ -290,7 +290,7 @@ fig.update_traces(hoverinfo='label+percent', textinfo='value+percent', pull=[0.1
 fig.show()
 
 
-# Al analizar las tres áreas monitorizadas, se observa que el "Tablero Normal" representa el mayor porcentaje en el consumo de energía. Es importante destacar que, de todo el consumo acumulado, el 73% se concentra en esta área. Esto sugiere que un manejo eficiente y control del sistema de aire acondicionado podrían resultar en una mayor eficiencia en el consumo de energía."
+# Al analizar las tres áreas medidas, se observa que el "Tablero Normal" representa el mayor porcentaje en el consumo de energía. Es importante destacar que de todo el consumo acumulado el 73% se concentra en esta área. Esto sugiere que un manejo eficiente y control del sistema de aire acondicionado podrían resultar en una mayor eficiencia en el consumo de energía."
 
 # In[19]:
 
@@ -308,7 +308,7 @@ fig.update_layout(
 
 # Se puede notar que el 'martes' es el rango más amplio de consumo energético en la semana. Por otro lado, el 'sábado' y el 'domingo' presentan un patrón de consumo  más bajos, lo que podría sugerir una menor demanda de energía durante los fines de semana. Este análisis detallado del patrón de consumo por día.
 
-# In[20]:
+# In[27]:
 
 
 import pandas as pd

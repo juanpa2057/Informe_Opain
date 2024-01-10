@@ -18,7 +18,7 @@ project_path = Path(_PROJECT_PATH)
 sys.path.append(str(project_path))
 
 
-# In[2]:
+# In[3]:
 
 
 #Import all your modules here
@@ -28,21 +28,21 @@ import config_v2 as cfg
 from library_ubidots_v2 import Ubidots as ubi
 
 
-# In[3]:
+# In[9]:
 
 
 #baseline=cfg.BASELINE
 study=cfg.STUDY
 
 
-# In[4]:
+# In[5]:
 
 
 df_devices = ubi.get_available_devices_v2(label="opain", level="group", page_size=1000)
 df_vars = ubi.get_available_variables(list(df_devices['device_id']))
 
 
-# In[5]:
+# In[8]:
 
 
 df_vars = df_vars[df_vars['variable_label'].isin(cfg.WHITELISTED_VAR_LABELS)]
@@ -50,7 +50,7 @@ VAR_IDS_TO_REQUEST = list(df_vars['variable_id'])
 VAR_ID_TO_LABEL = dict(zip(df_vars['variable_id'], df_vars['variable_label']))
 
 
-# In[6]:
+# In[10]:
 
 
 CHUNK_SIZE = 100
@@ -85,7 +85,7 @@ for idx in range(0, ubi.ceildiv(len(VAR_IDS_TO_REQUEST), CHUNK_SIZE)):
 df = ubi.parse_response(lst_responses, VAR_ID_TO_LABEL)
 
 
-# In[7]:
+# In[14]:
 
 
 pd.to_pickle(df, project_path / 'data'/ _PICKLED_DATA_FILENAME)
