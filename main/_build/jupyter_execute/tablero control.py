@@ -93,7 +93,7 @@ tension_3 = df.query("variable== 'tension-fase-l3-hvac'").copy()
 
 #This step is to clean the data
 ea_tablero = cln.remove_outliers_by_zscore(ea_tablero, zscore=3)
-fp_tablero = cln.remove_outliers_by_zscore(fp_tablero, zscore=3)
+fp_tablero = cln.remove_outliers_by_zscore(fp_tablero, zscore=2)
 corriente_1 = cln.remove_outliers_by_zscore(corriente_1, zscore=3)
 corriente_2 = cln.remove_outliers_by_zscore(corriente_2, zscore=3)
 corriente_3 = cln.remove_outliers_by_zscore(corriente_3, zscore=3)
@@ -135,7 +135,7 @@ tension_3_h = pro.datetime_attributes(tension_3_h)
 
 # ## Control Sistema HVAC
 
-# Analizaremos la carga Tablero normal Oficinas la cual tuvo un consumo de energía:
+# Analizaremos la carga Control Sistema HVAC, la cual tuvo el siguiente patrón de consumo de energía: 
 # - Noviembre: 814 kWh/mes
 # - Diciembre: 1,454 kWh/mes
 
@@ -189,10 +189,16 @@ fig.show()
 # In[10]:
 
 
-print(f'La Carga presenta consumos máximo de {ea_tablero_d["value"].max():.2f} kWh/día y mínimo de {ea_tablero_d["value"].min():.2f} kWh/día. \nAunque la carga es variable, los valores medios son de alrededor de {ea_tablero_d["value"].mean():.2f} kWh/día.')
+print(f'La carga presenta consumos máximo de {ea_tablero_d["value"].max():.2f} kWh/día y mínimo de {ea_tablero_d["value"].min():.2f} kWh/día. \nAunque la carga es variable, los valores medios son de alrededor de {ea_tablero_d["value"].mean():.2f} kWh/día.')
 
 
 # In[11]:
+
+
+fp_tablero_h
+
+
+# In[12]:
 
 
 #fp_tablero_h['value'] = fp_tablero_h['value'].round(2)
@@ -202,7 +208,7 @@ fig = px.box(
     y="value",
     color_discrete_sequence=repcfg.FULL_PALETTE,
     labels={'day': 'Día', 'value': 'Consumo [kWh/día]'},
-    title="Factor de potencia promedio"
+    title="Factor de Potencia Promedio"
 )
 
 fig.update_layout(
@@ -217,7 +223,7 @@ fig.update_layout(
 fig.show()
 
 
-# In[12]:
+# In[13]:
 
 
 # Filtrar los valores de 'value' que sean mayores que 0
@@ -228,13 +234,13 @@ promedio_positivos = valores_positivos.mean().round(2)
 
 
 
-# In[13]:
+# In[14]:
 
 
 print("El Factor de Potencia Promedio es de", promedio_positivos, "lo cual es un fp bajo")
 
 
-# In[14]:
+# In[15]:
 
 
 df_plot = pd.concat([corriente_1_h, corriente_2_h, corriente_3_h])
@@ -274,7 +280,7 @@ for variable in list_vars:
 
 
 fig.update_layout(
-    title=f" Corrientes Tablero Normal [A]",
+    title=f" Corrientes Control HVSA [A]",
     font_family=repcfg.CELSIA_FONT,
     font_size=repcfg.PLOTLY_TITLE_FONT_SIZE,
     font_color=repcfg.FULL_PALETTE[1],
@@ -290,7 +296,7 @@ fig.update_yaxes(rangemode="tozero")
 fig.show()
 
 
-# In[15]:
+# In[16]:
 
 
 # Utiliza pivot_table para pivotear la columna 'variable' y mostrar los valores de 'value'
@@ -311,7 +317,7 @@ desbalance_c['desbalance_corriente'] = desbalance_c['desbalance_corriente'].roun
 
 
 
-# In[16]:
+# In[17]:
 
 
 df_tension= pd.concat([tension_1_h, tension_2_h, tension_3_h])
@@ -323,8 +329,8 @@ df_tension = df_tension[df_tension['month'] !=11 ]
 
 list_vars = [
     'tension-fase-l1-hvac',
-    'tension-fase-l1-hvac',
-    'tension-fase-l1-hvac'
+    'tension-fase-l2-hvac',
+    'tension-fase-l3-hvac'
 ]
 
 alpha = 0.75
@@ -351,7 +357,7 @@ for variable in list_vars:
 
 
 fig.update_layout(
-    title=f" Tensiones Tablero Normal [V]",
+    title=f" Tensiones Control HVSA [V]",
     font_family=repcfg.CELSIA_FONT,
     font_size=repcfg.PLOTLY_TITLE_FONT_SIZE,
     font_color=repcfg.FULL_PALETTE[1],
@@ -367,7 +373,7 @@ fig.update_yaxes(rangemode="tozero")
 fig.show()
 
 
-# In[17]:
+# In[18]:
 
 
 # Utiliza pivot_table para pivotear la columna 'variable' y mostrar los valores de 'value'
@@ -389,7 +395,7 @@ desbalance_t['desbalance_tension'] = desbalance_t['desbalance_tension'].round(2)
 
 
 
-# In[18]:
+# In[19]:
 
 
 df_desbalance= pd.concat([desbalance_c, desbalance_t])
@@ -439,4 +445,4 @@ fig.update_yaxes(rangemode="tozero")
 fig.show()
 
 
-# Al analizar la gráfica de tendencia, se observa un desequilibrio de corriente superior al 20%; sin embargo, no se detecta un desequilibrio en la tensión que exceda los umbrales recomendados. Se sugiere realizar un balance de carga para reducir el desequilibrio de corriente. Aunque este desequilibrio no afecta actualmente el funcionamiento de los equipos, es importante considerarlo para futuras ampliaciones o repotenciaciones de las cargas
+# Como en los casos anteriores, se evidencia un desequilibrio en las corrientes superior al 20% por lo que se recomienda revisar el punto y validar la posibilidad de redistribuir las cargas. Esto entendiendo la naturaleza del sistema y buscando evitar posibles futuras afectaciones. 

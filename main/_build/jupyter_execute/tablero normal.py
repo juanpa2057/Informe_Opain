@@ -93,7 +93,7 @@ tension_3 = df.query("variable== 'tension-fase-l3'").copy()
 
 #This step is to clean the data
 ea_tablero = cln.remove_outliers_by_zscore(ea_tablero, zscore=3)
-fp_tablero = cln.remove_outliers_by_zscore(fp_tablero, zscore=3)
+fp_tablero = cln.remove_outliers_by_zscore(fp_tablero, zscore=1)
 corriente_1 = cln.remove_outliers_by_zscore(corriente_1, zscore=3)
 corriente_2 = cln.remove_outliers_by_zscore(corriente_2, zscore=3)
 corriente_3 = cln.remove_outliers_by_zscore(corriente_3, zscore=3)
@@ -189,7 +189,7 @@ fig.show()
 # In[10]:
 
 
-print(f'La Carga presenta consumos máximo de {ea_tablero_d["value"].max():.2f} kWh/día y mínimo de {ea_tablero_d["value"].min():.2f} kWh/día. \nAunque la carga es variable, los valores medios son de alrededor de {ea_tablero_d["value"].mean():.2f} kWh/día.')
+print(f'La carga presenta consumos máximo de {ea_tablero_d["value"].max():.2f} kWh/día y mínimo de {ea_tablero_d["value"].min():.2f} kWh/día. \nAunque la carga es variable, los valores medios son de alrededor de {ea_tablero_d["value"].mean():.2f} kWh/día.')
 
 
 # In[11]:
@@ -202,7 +202,7 @@ fig = px.box(
     y="value",
     color_discrete_sequence=repcfg.FULL_PALETTE,
     labels={'day': 'Día', 'value': 'Consumo [kWh/día]'},
-    title="Factor de potencia promedio"
+    title="Factor de Potencia"
 )
 
 fig.update_layout(
