@@ -195,12 +195,6 @@ print(f'La carga presenta consumos máximo de {ea_tablero_d["value"].max():.2f} 
 # In[11]:
 
 
-fp_tablero_h
-
-
-# In[12]:
-
-
 #fp_tablero_h['value'] = fp_tablero_h['value'].round(2)
 
 fig = px.box(
@@ -223,7 +217,7 @@ fig.update_layout(
 fig.show()
 
 
-# In[13]:
+# In[12]:
 
 
 # Filtrar los valores de 'value' que sean mayores que 0
@@ -234,13 +228,13 @@ promedio_positivos = valores_positivos.mean().round(2)
 
 
 
-# In[14]:
+# In[13]:
 
 
 print("El Factor de Potencia Promedio es de", promedio_positivos, "lo cual es un fp bajo")
 
 
-# In[15]:
+# In[14]:
 
 
 df_plot = pd.concat([corriente_1_h, corriente_2_h, corriente_3_h])
@@ -296,7 +290,7 @@ fig.update_yaxes(rangemode="tozero")
 fig.show()
 
 
-# In[16]:
+# In[15]:
 
 
 # Utiliza pivot_table para pivotear la columna 'variable' y mostrar los valores de 'value'
@@ -317,7 +311,7 @@ desbalance_c['desbalance_corriente'] = desbalance_c['desbalance_corriente'].roun
 
 
 
-# In[17]:
+# In[16]:
 
 
 df_tension= pd.concat([tension_1_h, tension_2_h, tension_3_h])
@@ -373,7 +367,7 @@ fig.update_yaxes(rangemode="tozero")
 fig.show()
 
 
-# In[18]:
+# In[17]:
 
 
 # Utiliza pivot_table para pivotear la columna 'variable' y mostrar los valores de 'value'
@@ -395,7 +389,7 @@ desbalance_t['desbalance_tension'] = desbalance_t['desbalance_tension'].round(2)
 
 
 
-# In[19]:
+# In[18]:
 
 
 df_desbalance= pd.concat([desbalance_c, desbalance_t])
