@@ -5,4 +5,8 @@ format: jb-book
 root: intro
 chapters:
 - file: report
+- file: tablero normal
+- file: tablero regulado
+- file: tablero control
+
 

@@ -31,7 +31,7 @@ class Configuration:
     PLOTLY_TITLE_X = 0.5
 
     GOLDEN_RATIO = (1+(5)**0.5)/2
-    JBOOK_PLOTLY_WIDTH = 725
+    JBOOK_PLOTLY_WIDTH = 1000
     JBOOK_PLOTLY_HEIGHT = JBOOK_PLOTLY_WIDTH / GOLDEN_RATIO
 
     dct_dow = {

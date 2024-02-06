@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 import json
+import holidays
 from datetime import datetime
 
 import plotly.io as pio
@@ -33,6 +34,7 @@ project_path = Path(_PROJECT_PATH)
 sys.path.append(str(project_path))
 
 import config_v2 as cfg
+
 
 from library_report_v2 import Cleaning as cln
 from library_report_v2 import Graphing as grp
@@ -88,6 +90,7 @@ df = pro.datetime_attributes(df)
 # In[8]:
 
 
+#df = df[df['month'] !=11 ]
 df = df[df['month'] !=1 ]
 
 
@@ -105,13 +108,14 @@ ea_tablero_regulado = df.query("variable== 'ea-oficinas-tablero-regulado-hora'")
 
 
 #This step is to clean the data
-ea_total = cln.remove_outliers_by_zscore(ea_total, zscore=4)
+ea_total = cln.remove_outliers_by_zscore(ea_total, zscore=3)
 ea_sistema_hvac = cln.remove_outliers_by_zscore(ea_sistema_hvac, zscore=4)
 ea_tablero_normal = cln.remove_outliers_by_zscore(ea_tablero_normal, zscore=4)
 ea_tablero_regulado = cln.remove_outliers_by_zscore(ea_tablero_regulado, zscore=4)
 
 df_ea = df.copy()
-df_ea = cln.remove_outliers_by_zscore(df_ea, zscore=3)
+df_ea = cln.remove_outliers_by_zscore(df_ea, zscore=4)
+
 
 
 # In[11]:
@@ -123,18 +127,43 @@ df_month = pro.datetime_attributes(df_month)
 ea_diaria = df_ea.groupby(by=["variable"]).resample('D').sum().reset_index().set_index('datetime')
 ea_diaria = pro.datetime_attributes(ea_diaria)
 
-df_ea['value'] = df_ea['value'].round(2)
-df_ea = df_ea.groupby(["hour", "dow"])["value"].mean().reset_index()
+
+ea_hour = df_ea.groupby(by=["variable"]).resample('H').mean().reset_index().set_index('datetime')
+ea_hour = pro.datetime_attributes(ea_hour)
+
+df_hora = ea_total.groupby(by=["variable"]).resample('H').mean().reset_index().set_index('datetime')
+df_hora = pro.datetime_attributes(df_hora)
+
+df_hora = df_hora[df_hora['month'] !=11 ]
+
+#df_ea = df_ea.groupby(["hour", "dow"])["value"].mean().reset_index()
+#df_ea['value'] = df_ea['value'].round(2)
 
 
 # In[12]:
 
 
-df_ea['value'] = df_ea['value'].round(2)
-df_ea = df_ea.groupby(["hour", "dow"])["value"].mean().reset_index()
+# Supongamos que df es tu DataFrame con índice datetime
+df_hora['festivo'] = df_hora.index.to_series().apply(lambda x: x in holidays.Colombia())
+
+# Supongamos que df es tu DataFrame con índice datetime y la columna 'festivo'
+df_hora['dow'] = df_hora.apply(lambda row: 'festivo' if row['festivo'] else row['dow'], axis=1)
 
 
 # In[13]:
+
+
+# Agrupar por día de la semana y hora, calcular el promedio
+#df_hora = df_hora.groupby(["dow", "hour"])["value"].mean().reset_index()
+
+# Ordenar los días de la semana en el orden deseado (por ejemplo, lunes primero)
+dias_ordenados = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo", "festivo"]
+df_hora['dow'] = pd.Categorical(df_hora['dow'], categories=dias_ordenados, ordered=True)
+df_hora = df_hora.sort_values(["dow", "hour"])
+
+
+
+# In[14]:
 
 
 valores_a_buscar = [
@@ -152,15 +181,23 @@ mapeo = {
 
 }
 
+mapeo2 = {
+    "ea-consumo-total-hora": 'Energía Total Medido',
+    "ea-control-sistema-hvac-hora": "Energía Sistema HVCA",
+    "ea-oficinas-tablero-normal-hora": "Energía Tablero Normal",
+    "ea-oficinas-tablero-regulado-hora": "Energía Tablero Regulado"
 
-# In[14]:
+}
+
+
+# In[15]:
 
 
 df_month = df_month[df_month['variable'].isin(valores_a_buscar)]
 ea_diaria = ea_diaria[ea_diaria['variable'].isin(valores_a_buscar)]
 
 
-# In[15]:
+# In[16]:
 
 
 ea_diaria['month_day'] = ea_diaria['month'].astype(str) + '-' + ea_diaria['day'].astype(str)
@@ -172,19 +209,57 @@ agg_df = ea_diaria.groupby(['month_day', 'variable'])['value'].sum().reset_index
 
 # ## Informe Consumos de energía
 
-# A continuacíon se presenta un informe del monitoreo energetico llevado en Opain desde el 11 noviembre al 31 diciemmbre 2023
+# A continuación se presenta un informe del monitoreo energético llevado en Opain desde el 11 de noviembre al 31 de diciembre de 2023. En la siguiente tabla resumen, se visualizan los consumos por mes de cada una de las cargas que se presentan en el monitoreo.
+# 
 
-# In[16]:
+# In[17]:
+
+
+df_month_2 =df_month.copy()
+
+df_month_2["variable"] = df_month_2["variable"].replace(mapeo2)
+
+# Pivotar la columna "month"
+df_pivoted = df_month_2.pivot_table(index='variable', columns='month', values='value', aggfunc='sum')
+
+# Ordenar el DataFrame por el mes 12 en orden descendente
+df_pivoted = df_pivoted.sort_values(by=12, ascending=False)
+
+# Redondear y formatear los valores sin decimales
+df_pivoted = df_pivoted.round(0).applymap(lambda x: f'{x:,.0f}')
+
+# Crear la tabla
+fig = go.Figure(data=[go.Table(
+    header=dict(values=['Proceso', 'Noviembre', 'Diciembre']),  # Cambiar '11' y '12' por los nombres reales de tus meses
+    cells=dict(values=[df_pivoted.index,
+                       df_pivoted[11],
+                       df_pivoted[12]]))
+])
+
+# Ajustar el diseño y formato
+fig.update_layout(
+    title='Consumo de Energía por Mes',
+    font=dict(size=11),  # Ajustar el tamaño del texto
+    template='plotly_white',  # Cambiar el tema a plotly_white
+    height=300  # Ajustar la altura de la tabla
+)
+
+# Mostrar la tabla
+fig.show()
+
+
+# En la siguiente grafica de consumo se representa línea naranja representando el consumo total y gráficos distintos para las áreas HVCA, Consumo tablero normal y Regulado. El consumo total destaca alrededor de 300 kWh/día, el control HVCA se mantiene bajo 200 kWh/día, y las oficinas oscilan alrededor de 50 kWh/día, ofreciendo una clara visión del patrón de consumo y diferencias entre las áreas.
+
+# In[18]:
 
 
 ea_diaria['variable'] = ea_diaria['variable'].replace(mapeo)
 
-
 list_vars = [
-    "Consumo energía total Medido",
-    "Consumo energía Sistema HVCA",
-    "Consumo energía Tablero normal",
-    "Consumo energía Tablero Regulado"
+    "Consumo Energía Total Medido",
+    "Consumo Energía Sistema HVCA",
+    "Consumo Energía Tablero Normal",
+    "Consumo Energía Tablero Regulado"
 ]
 
 alpha = 0.75
@@ -209,7 +284,6 @@ for variable in list_vars:
         ))
 
 
-
 fig.update_layout(
     title=f"{DEVICE_NAME}: Consumo de energía activa [kWh]",
     font_family=repcfg.CELSIA_FONT,
@@ -227,53 +301,40 @@ fig.update_yaxes(rangemode="tozero")
 fig.show()
 
 
-# El gráfico muestra el consumo de energía activa en kWh del 11 de noviembre al 31 de diciembre de 2023, con la línea naranja representando el consumo total y gráficos distintos para las áreas HVCA, Consumo tablero normal y Regulado. El consumo total destaca alrededor de 300 kWh/día, el control HVCA se mantiene bajo 200 kWh/día, y las oficinas oscilan alrededor de 50 kWh/día, ofreciendo una clara visión del patrón de consumo y diferencias entre las áreas.
+# El consumo de energía es menor los días sábado, domingo y festivo, correspondiente al consumo total, donde la curva de demanda es influenciada por la carga de consumo de energía en el tablero normal. Además, se aprecia que la carga del sistema HVAC mantiene un consumo constante y no varía según el tipo de día.
 
-# In[17]:
-
-
-df_month['variable'] = df_month['variable'].replace(mapeo)
-
-#df_month = df_month.query("month != 1 and variable != 'ea-consumo-total-hora'")
-# Ordenar el DataFrame por variable y mes de manera descendente
-df_month = df_month.sort_values(by=['variable', 'month'], ascending=[True, False])
-
-# Redondear y formatear los valores sin decimales
-df_month['value_formatted'] = df_month['value'].round(0).apply(lambda x: f'{x:,.0f}')
-
-# Crear la tabla
-fig = go.Figure(data=[go.Table(
-    header=dict(values=['Proceso', 'Consumo Energía (kWh)', 'Mes']),
-    cells=dict(values=[df_month['variable'], 
-                       df_month['value_formatted'],  # Usar los valores formateados
-                       df_month['month']]))
-])
-
-# Ajustar el diseño y formato
-fig.update_layout(
-    title='Datos de Consumo de Energía por Mes',
-    font=dict(size=13),  # Ajustar el tamaño del texto
-    template='plotly_white'  # Cambiar el tema a plotly_white
-)
-
-# Mostrar la tabla
-fig.show()
+# In[19]:
 
 
-# Se representa el consumo acumulado de energía en kWh por area durante los meses de noviembre y diciembre del 2023:
-# 
+ea_barra = ea_diaria[ea_diaria["variable"] == "Consumo Energía Total Medido"]
+ea_diaria['variable'] = ea_diaria['variable'].replace(mapeo)
+
+ea_hour['variable'] = ea_hour['variable'].replace(mapeo)
+consumo_hour = ea_hour[ea_hour["variable"] == "Consumo Energía Total Medido"]
+
+
+# In[20]:
+
+
+# los valores unicos de esta columa consumo_hour["dow"]  
+dow = consumo_hour["dow"].unique()   
+print(dow)
+
+
 # - Energía Tablero Nomal: Esta area tiene la mayor parte del consumo con un 73% del total.
 # 
 # - Energía Sistema HVCA: Esta area tiene el segundo mayor consumo con un 18% del total.
 # 
 # - Energía Tablero Regulado: Esta area el restante del consumo con un 8.7% del total.
 
-# In[18]:
+# In[21]:
 
+
+df_month["variable"] = df_month["variable"].replace(mapeo)
 
 # Agrupar por area y sumar la energía
 df_grouped = df_month.groupby('variable').sum().reset_index()
-df_grouped = df_grouped[(df_grouped['variable'] != 'Consumo energía total Medido')]
+df_grouped = df_grouped[(df_grouped['variable'] != 'Consumo Energía Total Medido')]
 
 
 
@@ -292,50 +353,54 @@ fig.show()
 
 # Al analizar las tres áreas medidas, se observa que el "Tablero Normal" representa el mayor porcentaje en el consumo de energía. Es importante destacar que de todo el consumo acumulado el 73% se concentra en esta área. Esto sugiere que un manejo eficiente y control del sistema de aire acondicionado podrían resultar en una mayor eficiencia en el consumo de energía."
 
-# In[19]:
+# In[22]:
 
 
-fig = px.box(df_ea, x="dow", y="value", color="dow", points='all', category_orders={"dow": ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]})
-fig.update_layout(
-    title='Consumo por tipo de día',
-    width=800,
-    height=600,
-    yaxis_title="Consumo kWh",
-    title_font_size=12,
-    xaxis_title="Día"
+consumo_hour2 = consumo_hour.copy()
+consumo_hour2 = consumo_hour2[consumo_hour2["month"] != 11]
+matrix = consumo_hour2.pivot(index='day', columns='hour', values='value')
+
+if (matrix.shape[0] > 0) & (matrix.shape[1] > 0):
+    data = grp.pivoted_dataframe_to_plotly_heatmap(matrix)
+    grp.hourly_heatmap(
+        data,
+        title=f"Consumo total de energía activa [kWh] en Diciembre"
+    )
+
+
+# In[23]:
+
+
+import plotly.graph_objects as go
+
+# Supongamos que df_ea es tu DataFrame original
+
+# Lista de días de la semana en el orden deseado
+dias_ordenados = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo', 'festivo']
+colores_Celsia = ['#f37620', '#585a5b', '#fec431', '#1fa1db', '#00be91', '#ca1e48', '#19459a', '#ef966e', '#949495', '#fae364']
+# Crear una lista de Box para cada día de la semana
+traces = []
+for dia in dias_ordenados:
+    trace = go.Box(
+        y=df_hora[df_hora['dow'] == dia]['value'],
+        boxpoints='all',
+        name=dia.capitalize(),
+        marker_color=colores_Celsia[dias_ordenados.index(dia)]  # Asignar un color correspondiente
+    )
+    traces.append(trace)
+
+# Crear el layout
+layout = go.Layout(
+    title='Consumo de Energía por Día de la Semana (kWh)',
+    xaxis=dict(title='Día de la Semana'),
+    yaxis=dict(title='Consumo de Energía'),
 )
+
+# Crear la figura
+fig = go.Figure(data=traces, layout=layout)
+
+# Mostrar la figura
+fig.show()
 
 
 # Se puede notar que el 'martes' es el rango más amplio de consumo energético en la semana. Por otro lado, el 'sábado' y el 'domingo' presentan un patrón de consumo  más bajos, lo que podría sugerir una menor demanda de energía durante los fines de semana. Este análisis detallado del patrón de consumo por día.
-
-# In[27]:
-
-
-import pandas as pd
-
-# Calcular el promedio por combinación de hour y dow
-promedio_por_hora_dia = df_ea.groupby(['hour', 'dow'])['value'].mean().reset_index()
-
-
-
-# In[21]:
-
-
-import pandas as pd
-
-# Supongamos que tu DataFrame se llama ea_total
-# Si ya tienes definido el DataFrame, no necesitas esta línea
-# ea_total = ...
-
-# Convertir la columna 'datetime' al formato adecuado (si aún no está en datetime)
-#ea_total['datetime'] = pd.to_datetime(ea_total['datetime'])
-
-# Agrupar por día de la semana y hora, calcular el promedio de 'value'
-ea_avg_per_day_hour = ea_total.groupby(['dow', 'hour'])['value'].mean().reset_index()
-
-# Puedes ajustar el índice si lo prefieres
-# ea_avg_per_day_hour = ea_avg_per_day_hour.set_index(['dow', 'hour'])
-
-# Imprimir el nuevo DataFrame con el promedio por día y hora
-
-

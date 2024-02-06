@@ -118,6 +118,21 @@ const thebe_selector_output = ".output, .cell_output"
    Informe Consumos de energía
   </a>
  </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tablero%20normal.html">
+   Tablero Normal Oficinas
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tablero%20regulado.html">
+   Tablero Regulado Oficinas
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../tablero%20control.html">
+   Control Sistema HVAC
+  </a>
+ </li>
 </ul>
 
     </div>
@@ -325,27 +340,6 @@ sys.path.append(str(project_path))
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">6</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">from</span> <span class="nn">dotenv</span> <span class="kn">import</span> <span class="n">load_dotenv</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="n">load_dotenv</span><span class="p">()</span>
-<span class="ne">----&gt; </span><span class="mi">6</span> <span class="n">_PROJECT_PATH</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;_project_path&quot;</span><span class="p">]</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="n">_PICKLED_DATA_FILENAME</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;_pickled_data_filename&quot;</span><span class="p">]</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span> <span class="kn">import</span> <span class="nn">sys</span>
-
-<span class="nn">File ~\.conda\envs\nuevo2-env\lib\os.py:679,</span> in <span class="ni">_Environ.__getitem__</span><span class="nt">(self, key)</span>
-<span class="g g-Whitespace">    </span><span class="mi">676</span>     <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">encodekey</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span>
-<span class="g g-Whitespace">    </span><span class="mi">677</span> <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">678</span>     <span class="c1"># raise KeyError with the original key value</span>
-<span class="ne">--&gt; </span><span class="mi">679</span>     <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
-<span class="g g-Whitespace">    </span><span class="mi">680</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">decodevalue</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-<span class="ne">KeyError</span>: &#39;_project_path&#39;
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -425,7 +419,9 @@ df = ubi.parse_response(lst_responses, VAR_ID_TO_LABEL)
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Making request for the following interval: Study:2023-11-11, Study:2024-01-01
-Progress: 100.0%
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Progress: 100.0%
 Response status code: 200
 </pre></div>
 </div>
