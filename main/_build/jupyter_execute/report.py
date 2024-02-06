@@ -207,7 +207,7 @@ ea_diaria = ea_diaria.sort_values('datetime')
 agg_df = ea_diaria.groupby(['month_day', 'variable'])['value'].sum().reset_index()
 
 
-# ## Informe Consumos de energía
+# ## Informe Consumos de Energía
 
 # A continuación se presenta un informe del monitoreo energético llevado en Opain desde el 11 de noviembre al 31 de diciembre de 2023. En la siguiente tabla resumen, se visualizan los consumos por mes de cada una de las cargas que se presentan en el monitoreo.
 # 
@@ -248,7 +248,7 @@ fig.update_layout(
 fig.show()
 
 
-# En la siguiente grafica de consumo se representa línea naranja representando el consumo total y gráficos distintos para las áreas HVCA, Consumo tablero normal y Regulado. El consumo total destaca alrededor de 300 kWh/día, el control HVCA se mantiene bajo 200 kWh/día, y las oficinas oscilan alrededor de 50 kWh/día, ofreciendo una clara visión del patrón de consumo y diferencias entre las áreas.
+# Se identificó que el consumo de energía es menor los días sábado, domingo y festivo. Esto basados en el consumo total, donde la curva de demanda es influenciada significativamente por la carga de Consumo Tablero Normal. Además, se aprecia que la carga del Control Sistema HVAC mantiene un consumo constante y no varía significativamente según el tipo de día.
 
 # In[18]:
 
@@ -321,11 +321,9 @@ dow = consumo_hour["dow"].unique()
 print(dow)
 
 
-# - Energía Tablero Nomal: Esta area tiene la mayor parte del consumo con un 73% del total.
-# 
-# - Energía Sistema HVCA: Esta area tiene el segundo mayor consumo con un 18% del total.
-# 
-# - Energía Tablero Regulado: Esta area el restante del consumo con un 8.7% del total.
+# - Energía Tablero Normal: esta área tiene la mayor parte del consumo con un 73% del total
+# - Energía Control Sistema HVCA: esta área tiene el segundo mayor consumo con un 18% del total
+# - Energía Tablero Regulado: esta área el restante del consumo con un 8.7% del total.
 
 # In[21]:
 
@@ -340,7 +338,7 @@ df_grouped = df_grouped[(df_grouped['variable'] != 'Consumo Energía Total Medid
 
 # Crear el gráfico de torta
 fig = px.pie(df_grouped, values='value', names='variable', 
-             title='Distribución del Consumo de Energía por Area',
+             title='Distribución del Consumo de Energía por Área [kWh]',
              labels={'variable': 'Máquina', 'value': 'Consumo de Energía'},
              color_discrete_sequence=px.colors.qualitative.Set1)
 
@@ -351,7 +349,7 @@ fig.update_traces(hoverinfo='label+percent', textinfo='value+percent', pull=[0.1
 fig.show()
 
 
-# Al analizar las tres áreas medidas, se observa que el "Tablero Normal" representa el mayor porcentaje en el consumo de energía. Es importante destacar que de todo el consumo acumulado el 73% se concentra en esta área. Esto sugiere que un manejo eficiente y control del sistema de aire acondicionado podrían resultar en una mayor eficiencia en el consumo de energía."
+# Al analizar las tres áreas medidas, se observa que la carga de Consumo Tablero Normal representa el mayor porcentaje en el consumo de energía. Es importante destacar que, de todo el consumo acumulado, el 73% se concentra en esta área. Esto sugiere que un manejo eficiente y control del consumo de las cargas asociadas a esta carga puede representar impacto positivo en la gestión de energía. 
 
 # In[22]:
 
@@ -391,9 +389,9 @@ for dia in dias_ordenados:
 
 # Crear el layout
 layout = go.Layout(
-    title='Consumo de Energía por Día de la Semana (kWh)',
+    title='Consumo de Energía Activa Diario [kWh]',
     xaxis=dict(title='Día de la Semana'),
-    yaxis=dict(title='Consumo de Energía'),
+    yaxis=dict(title='Consumo de Energía [kWh]'),
 )
 
 # Crear la figura
@@ -403,4 +401,4 @@ fig = go.Figure(data=traces, layout=layout)
 fig.show()
 
 
-# Se puede notar que el 'martes' es el rango más amplio de consumo energético en la semana. Por otro lado, el 'sábado' y el 'domingo' presentan un patrón de consumo  más bajos, lo que podría sugerir una menor demanda de energía durante los fines de semana. Este análisis detallado del patrón de consumo por día.
+# En el grafico es posible evidenciar que en el día Martes y Miercoles, se presenta el rango más amplio de consumo energético en la semana. Por otro lado, los días Sábado y Domingo presentan un patrón de consumo más bajos, lo que podría sugerir una menor demanda de energía durante los fines de semana.

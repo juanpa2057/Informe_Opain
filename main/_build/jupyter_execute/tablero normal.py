@@ -135,7 +135,7 @@ tension_3_h = pro.datetime_attributes(tension_3_h)
 
 # ## Tablero Normal Oficinas
 
-# Analizaremos la carga Tablero normal Oficinas la cual tuvo un consumo de energía:
+# Analizaremos la carga Tablero Normal Oficinas, la cual tuvo el siguiente patrón de consumo de energía: 
 # - Noviembre: 3476 kWh/mes
 # - Diciembre: 5594 kWh/mes
 
@@ -162,7 +162,7 @@ fig = px.bar(
     color='variable',
     color_discrete_sequence=repcfg.FULL_PALETTE,
     labels={'month_day':'Mes - Día', 'value':'Consumo [kWh]'},
-    title=f"Consumo diario de energía activa [kWh]",
+    title=f"Consumo de Energía Activa Diario [kWh]",
 )
  
  
@@ -220,7 +220,7 @@ fig.show()
 # In[12]:
 
 
-print("El factor de potencia promedio es de", fp_tablero_h['value'].mean().round(2), "lo cual es un fp esperado")
+print("El Factor de Potencia Promedio es de", fp_tablero_h['value'].mean().round(2), "lo cual es un fp esperado")
 
 
 # In[13]:
@@ -419,7 +419,7 @@ fig.update_layout(
     title_x=repcfg.PLOTLY_TITLE_X,
     width=repcfg.JBOOK_PLOTLY_WIDTH,
     height=repcfg.JBOOK_PLOTLY_HEIGHT,
-    yaxis=dict(title_text="Amperio [A] - Tension [V]"), 
+    yaxis=dict(title_text="Amperio [A] - Tensión [V]"), 
 )
 
 fig.update_traces(mode='lines')

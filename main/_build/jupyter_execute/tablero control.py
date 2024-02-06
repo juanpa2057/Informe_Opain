@@ -162,7 +162,7 @@ fig = px.bar(
     color='variable',
     color_discrete_sequence=repcfg.FULL_PALETTE,
     labels={'month_day':'Mes - Día', 'value':'Consumo [kWh]'},
-    title=f"Consumo diario de energía activa [kWh]",
+    title=f"Consumo de Energía Activa Diario [kWh]",
 )
  
  
@@ -220,10 +220,21 @@ fig.show()
 # In[12]:
 
 
-print("El factor de potencia promedio es de", fp_tablero_h['value'].mean().round(2), "lo cual es un fp esperado")
+# Filtrar los valores de 'value' que sean mayores que 0
+valores_positivos = fp_tablero_h['value'][fp_tablero_h['value'] > 0]
+
+# Calcular el promedio de los valores positivos
+promedio_positivos = valores_positivos.mean().round(2)
+
 
 
 # In[13]:
+
+
+print("El Factor de Potencia Promedio es de", promedio_positivos, "lo cual es un fp bajo")
+
+
+# In[14]:
 
 
 df_plot = pd.concat([corriente_1_h, corriente_2_h, corriente_3_h])
@@ -279,7 +290,7 @@ fig.update_yaxes(rangemode="tozero")
 fig.show()
 
 
-# In[14]:
+# In[15]:
 
 
 # Utiliza pivot_table para pivotear la columna 'variable' y mostrar los valores de 'value'
@@ -300,7 +311,7 @@ desbalance_c['desbalance_corriente'] = desbalance_c['desbalance_corriente'].roun
 
 
 
-# In[15]:
+# In[16]:
 
 
 df_tension= pd.concat([tension_1_h, tension_2_h, tension_3_h])
@@ -356,7 +367,7 @@ fig.update_yaxes(rangemode="tozero")
 fig.show()
 
 
-# In[16]:
+# In[17]:
 
 
 # Utiliza pivot_table para pivotear la columna 'variable' y mostrar los valores de 'value'
@@ -378,7 +389,7 @@ desbalance_t['desbalance_tension'] = desbalance_t['desbalance_tension'].round(2)
 
 
 
-# In[17]:
+# In[18]:
 
 
 df_desbalance= pd.concat([desbalance_c, desbalance_t])
@@ -419,7 +430,7 @@ fig.update_layout(
     title_x=repcfg.PLOTLY_TITLE_X,
     width=repcfg.JBOOK_PLOTLY_WIDTH,
     height=repcfg.JBOOK_PLOTLY_HEIGHT,
-    yaxis=dict(title_text="Amperio [A] - Tension [V]"), 
+    yaxis=dict(title_text="Amperio [A] - Tensión [V]"), 
 )
 
 fig.update_traces(mode='lines')
