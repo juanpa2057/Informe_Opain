@@ -2,6 +2,8 @@
 
 ¡Hola!,
 
-En Celsia nos encanta acompañarte en tu meta de ser más eficiente, por eso te presentamos tu informe de consumo de energía.
+En Celsia nos encanta acompañarte en tu meta de ser más eficiente. Por eso, te presentamos tu informe de gestión de energía para Opain, correspondiente monitoreo. Para acceder a información detallada sobre las actividades, se puede consultar el [Tablero monitoreo de consumos de energía](https://celsia.iot.ubidots.com/app/dashboards/655366ea634f1f00511939e4).
 
-![alt text](https://www.celsia.com/wp-content/uploads/2021/11/Celsia-Horizonal-Eslogan_Jpg.jpg)
+
+```{tableofcontents}
+```
